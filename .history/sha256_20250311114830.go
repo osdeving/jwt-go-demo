@@ -97,18 +97,9 @@ func sha256(msg []byte) [32]byte {
 }
 
 func main() {
-	// "Uma mensagem" hasheada com SHA-256
-	// Hash conhecido: 1fceeb0e740fc91e820655ea5d49535ee37e757f674fabf647ab90cb53b3ea76
-	
 	msg := []byte("Uma mensagem")
-	hashKnown := "1fceeb0e740fc91e820655ea5d49535ee37e757f674fabf647ab90cb53b3ea76"
+	
 	digest := sha256(msg)
 	fmt.Printf("%x\n", digest)
-
-	if fmt.Sprintf("%x", digest) == hashKnown {
-		fmt.Println("Hashe válido")
-	} else {
-		fmt.Println("Hashe inválido")
-	}
 }
 

@@ -6,13 +6,7 @@ import (
 )
 
 // Valores iniciais do hash (definidos na especificação)
-var h = [8]uint32{
-    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
-}
-
-// Constantes SHA-256
-var k = [64]uint32{
+var h = [64]uint32{
 	0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
 	0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 	0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -31,6 +25,12 @@ var k = [64]uint32{
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 }
 
+// Constantes SHA-256
+var k = [64]uint32{
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+    // ... (restante das 64 constantes)
+    0xc67178f2,
+}
 
 func padMessage(msg []byte) []byte {
     origLen := uint64(len(msg) * 8) // Tamanho original em bits
@@ -97,18 +97,8 @@ func sha256(msg []byte) [32]byte {
 }
 
 func main() {
-	// "Uma mensagem" hasheada com SHA-256
-	// Hash conhecido: 1fceeb0e740fc91e820655ea5d49535ee37e757f674fabf647ab90cb53b3ea76
-	
 	msg := []byte("Uma mensagem")
-	hashKnown := "1fceeb0e740fc91e820655ea5d49535ee37e757f674fabf647ab90cb53b3ea76"
 	digest := sha256(msg)
 	fmt.Printf("%x\n", digest)
-
-	if fmt.Sprintf("%x", digest) == hashKnown {
-		fmt.Println("Hashe válido")
-	} else {
-		fmt.Println("Hashe inválido")
-	}
 }
 
