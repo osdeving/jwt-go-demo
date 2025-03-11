@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
-	"strings"
 )
 
 // =============================
@@ -59,20 +57,6 @@ func main() {
 
 	fmt.Println("JWT: " + jwt.Header + "." + jwt.Payload + "." + jwt.Signature)
 }
-
-// =============================
-//  Implementação do Base64-URL
-// =============================
-
-// encodeBase64URL codifica uma string em Base64-URL, removendo padding "="
-func encodeBase64URL(data []byte) string {
-	encoded := base64.StdEncoding.EncodeToString(data)
-	encoded = strings.ReplaceAll(encoded, "+", "-") // Substitui '+' por '-'
-	encoded = strings.ReplaceAll(encoded, "/", "_") // Substitui '/' por '_'
-	encoded = strings.TrimRight(encoded, "=")       // Remove '=' do padding
-	return encoded
-}
-
 
 // =============================
 //  Implementação do HMAC-SHA256 Manual

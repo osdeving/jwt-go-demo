@@ -1,9 +1,8 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
-	"strings"
+	"math/bits"
 )
 
 // =============================
@@ -61,20 +60,6 @@ func main() {
 }
 
 // =============================
-//  Implementação do Base64-URL
-// =============================
-
-// encodeBase64URL codifica uma string em Base64-URL, removendo padding "="
-func encodeBase64URL(data []byte) string {
-	encoded := base64.StdEncoding.EncodeToString(data)
-	encoded = strings.ReplaceAll(encoded, "+", "-") // Substitui '+' por '-'
-	encoded = strings.ReplaceAll(encoded, "/", "_") // Substitui '/' por '_'
-	encoded = strings.TrimRight(encoded, "=")       // Remove '=' do padding
-	return encoded
-}
-
-
-// =============================
 //  Implementação do HMAC-SHA256 Manual
 // =============================
 
@@ -100,30 +85,6 @@ func signHMACSHA256(message, secret string) string {
 
 	return encodeBase64URL(outerHash[:])
 }
-
-// =============================
-//  Implementação do Padding SHA-256
-// =============================
-
-func padSHA256(msg []byte) []byte {
-	origLen := len(msg) * 8 // Comprimento original da mensagem em bits
-	msg = append(msg, 0x80) // Adiciona o bit 1 seguido de zeros
-
-	// Preenche com zeros até restarem 8 bytes para o comprimento
-	for len(msg)%64 != 56 {
-		msg = append(msg, 0x00)
-	}
-
-	// Adiciona o comprimento original da mensagem em big-endian (64 bits)
-	lenBytes := make([]byte, 8)
-	for i := uint(0); i < 8; i++ {
-		lenBytes[7-i] = byte(origLen >> (i * 8))
-	}
-	msg = append(msg, lenBytes...) // Adiciona os 8 bytes finais do tamanho
-
-	return msg
-}
-
 
 // =============================
 //  Implementação do SHA-256 Manual

@@ -73,7 +73,6 @@ func encodeBase64URL(data []byte) string {
 	return encoded
 }
 
-
 // =============================
 //  Implementação do HMAC-SHA256 Manual
 // =============================

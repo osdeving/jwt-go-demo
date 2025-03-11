@@ -72,8 +72,6 @@ func encodeBase64URL(data []byte) string {
 	encoded = strings.TrimRight(encoded, "=")       // Remove '=' do padding
 	return encoded
 }
-
-
 // =============================
 //  Implementação do HMAC-SHA256 Manual
 // =============================
@@ -93,9 +91,7 @@ func signHMACSHA256(message, secret string) string {
 	for i := range opad {
 		opad[i] = 0x5c ^ key[i]
 		ipad[i] = 0x36 ^ key[i]
-	}
-
-	innerHash := sha256(append(ipad, []byte(message)...))
+	} innerHash := sha256(append(ipad, []byte(message)...))
 	outerHash := sha256(append(opad, innerHash[:]...))
 
 	return encodeBase64URL(outerHash[:])

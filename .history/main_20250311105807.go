@@ -1,9 +1,7 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
-	"strings"
 )
 
 // =============================
@@ -72,7 +70,6 @@ func encodeBase64URL(data []byte) string {
 	encoded = strings.TrimRight(encoded, "=")       // Remove '=' do padding
 	return encoded
 }
-
 
 // =============================
 //  Implementação do HMAC-SHA256 Manual
