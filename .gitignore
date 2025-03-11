@@ -1,0 +1,43 @@
+.history
+node_modules
+dist
+coverage
+.env
+
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# vscode
+.vscode
+
+# IntelliJ
+.idea
+
+# Node.js
+npm-debug.log
+yarn-error.log
+
+# Mac
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Linux
+*.swp
+
+# Logs
+*.log
+
+
