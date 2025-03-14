@@ -1,14 +1,28 @@
+<style>
+  table {
+    border-collapse: collapse;
+    width: 50%;
+  }
+  th, td {
+    border: 1px solid black;
+    text-align: center;
+    padding: 8px;
+  }
+</style>
+
 # Entendendo Base64
 
 Como funciona uma codificação? Imagine que você tem uma regra que diz o seguinte: caso a entrada for 'a', então o valor será 97, caso a entrada for 'b', então o valor será 98, caso for 'c', então o valor será 99, e assim em diante. Isso é um de-para e é também conhecido como tabela ASCII e envolve outros caracteres além do alfabeto. Descrevi um tipo de codificação. 
 
-Base64 é uma regra de codificação (Encode) que aplicamos na entrada produzindo uma saída. Isso significa que podemos lêr a entrada em base64 e produzir uma saída decodificada ou ler uma entrada decodificada e codificar em base64, respectivamente conhecidos como Encode e Decode. Diferença da tabela ASCII, a entrada pode ser qualquer coisa e não se limita apenas a caracteres individuais. No caso do Base64, a codificação funciona agrupando a entrada em blocos de 3 bytes (24 bits) e dividindo-os em 4 grupos de 6 bits. Cada um desses grupos de 6 bits é então convertido para um caractere correspondente em uma tabela de 64 símbolos, que inclui letras maiúsculas e minúsculas do alfabeto, números e dois caracteres especiais (+ e / no Base64 padrão). Quando a entrada não é um múltiplo exato de 3 bytes, a codificação adiciona um caractere de preenchimento (=) para manter a consistência.
+Base64 é uma regra de codificação (Encode) que aplicamos na entrada produzindo uma saída. Isso significa que podemos lêr a entrada em base64 e produzir uma saída decodificada ou ler uma entrada decodificada e codificar em base64, respectivamente conhecidos como Encode e Decode. 
 
-Diferente da tabela ASCII, onde cada caractere corresponde diretamente a um número fixo, no Base64 a conversão ocorre em blocos, garantindo que qualquer sequência de bytes possa ser representada apenas com caracteres seguros para transporte em protocolos como e-mails (MIME), URLs e JSON. Isso torna o Base64 útil para codificar binários, imagens, chaves criptográficas e outros dados que não são diretamente representáveis como texto legível.
+A diferença em relação a tabela ASCII, é que a entrada pode ser qualquer coisa e não se limita apenas a caracteres individuais. No caso do Base64, a codificação funciona agrupando a entrada em blocos de 3 bytes (24 bits) e dividindo-os em 4 grupos de 6 bits. Cada um desses grupos de 6 bits é então convertido para um caractere correspondente em uma tabela de 64 símbolos. Essa table inclui as letras maiúsculas e minúsculas do alfabeto, seguido pelos números de 0 a 9 e então por dois caracteres especiais (+ e / no Base64 padrão e _ e - no Base64URL). Quando a entrada não é um múltiplo exato de 3 bytes, a codificação adiciona um caractere de preenchimento (=) para manter a consistência.
 
-O processo inverso, conhecido como decodificação (Decode), pega uma string codificada em Base64 e reconstrói os bytes originais, revertendo a conversão de 6 bits para 8 bits e removendo qualquer padding (=) que tenha sido adicionado na codificação. Assim como podemos converter a → 97 na tabela ASCII e depois reverter 97 → a, no Base64 podemos pegar TWFu e recuperar Man.
+No Base64, a conversão ocorre em blocos e garante que qualquer sequência de bytes possam ser representadas apenas com caracteres seguros para transporte em protocolos como e-mails (MIME), URLs e JSON. Isso torna o Base64 útil para codificar binários, imagens, chaves criptográficas e outros dados que não são diretamente representáveis como texto legível.
 
-No entanto, é importante lembrar que Base64 não é uma criptografia, pois qualquer pessoa pode decodificá-lo facilmente. Ele é apenas um método de representação de dados que facilita o transporte e armazenamento em sistemas que não suportam caracteres binários diretamente.
+O processo inverso, conhecido como decodificação (Decode), pega uma string codificada em Base64 e reconstrói os bytes originais, revertendo a conversão de 6 bits para 8 bits e removendo qualquer padding (=) que tenha sido adicionado na codificação. Assim como podemos converter a → 97 na tabela ASCII e depois reverter 97 → a, no Base64 podemos pegar "TWFu" e recuperar "Man" ou vice-versa, a partir de "Man" obter "TWFu".
+
+No entanto, é importante lembrar que Base64 não é uma criptografia, pois qualquer pessoa pode decodificá-lo facilmente. Ele é apenas um método de representação de dados que facilita o transporte e armazenamento em sistemas que não suportam caracteres binários diretamente. Nota, o Base64 aumenta o tamanho dos dados em 33% em relação ao original.
 
 ## Como funciona na prática?
 
@@ -90,16 +104,16 @@ Bem tranquilo, certo?
 
 ## Implementação em Go
 
-O maior desafio que teremos é agrupar os bits em grupos de 6 bits, pois estamos trabalhando com 8 bits (1 byte). Isso implica que, a cada 3 bytes (24 bits no total), teremos 4 grupos de 6 bits, pois 24 / 6 = 4. 
+O maior desafio que teremos é agrupar os bits em grupos de 6 bits, pois normalmente estamos trabalhando com 8 bits (1 byte). Isso implica que, a cada 3 bytes (24 bits no total), teremos 4 grupos de 6 bits, pois 24 / 6 = 4. 
 
 
 ---
 <summary>Extra: Entendendo o bitwise AND
-
 <details>
-Se tivermos um valor binário qualquer e aplicarmos uma máscara bit a bit (bitwise AND) com 0b111111 (0x3F em hexadecimal), conseguimos extrair exatamente 6 bits da posição desejada.
+<br>
+<p>Se tivermos um valor binário qualquer e aplicarmos uma máscara bit a bit (bitwise AND) com 0b111111 (0x3F em hexadecimal), conseguimos extrair exatamente 6 bits da posição desejada.</p>
 
-Isso funciona porque o operador AND (&), mantém apenas os bits onde há 1 nos dois operadores, então podemos isolar porções específicas de um número maior.
+<p>Isso funciona porque o operador AND (&), mantém apenas os bits onde há 1 nos dois operadores, então podemos isolar porções específicas de um número maior.</p>
 
 #### Exemplo prático:
 
@@ -111,154 +125,239 @@ Resultado após AND:       00010010  (18 em decimal)
 
 Note que AND tem o poder de desligar o bit ou mantê-lo sem modificação. 
 
-1 AND 1 = 1
-1 AND 0 = 0
-0 AND 0 = 0
+<table border="1">
+  <tr>
+    <th>A</th>
+    <th>AND</th>
+    <th>B</th>
+    <th>C</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>AND</td>
+    <td>1</td>
+    <td>1</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>AND</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>AND</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+</table>
 
-Se você aplicar a máscara b00000000, vai apagar tudo
+<br>
 
-Se você aplicar a máscara b00000001 vai apagar tudo e, para o primeiro bit, vai depender se o outro valor tem 1 ou 0: se tiver 1, ele será mantido, se tiver 0, ele apaga.
+Ou seja:
+
+* Se você aplicar a máscara b00000000, vai apagar tudo
+* Se você aplicar a máscara b00000001 vai apagar tudo e, para o primeiro bit, vai depender se o outro valor tem 1 ou 0: se tiver 1, ele será mantido, se tiver 0, ele apaga.
 
 Outro exemplo: pegar apenas os bits 3 e 4 de um byte qualquer
 
-```
-BYTE qualquer:            10110110  (182 em decimal)
-Máscara de 3 bits:        00011000  (24 em decimal)
-Resultado após AND:       00010000  (16 em decimal)
-```
+<pre>
+BYTE qualquer:            <span style="color:#ffcc00;">01010010</span>  (82 em decimal)
+Máscara de 6 bits:        <span style="color:#00ccff;">00111111</span>  (0x3F em hexadecimal)
+Resultado após AND:       <span style="color:#ff6666;">00010010</span>  (18 em decimal)
+</pre>
+
 </details>
 </summary>
 
 ---
 
-Podemos trabalhar diretamente com 6 bytes em um int64 já que poderíamos percorrer a mensagem de entrada de 6 em 6 bytes e para cada passagem jogar os 6 bytes no int64 e extrair os valores usando máscara de bits.
+Podemos trabalhar diretamente com 3 bytes em um inteiro e percorrer a mensagem de entrada de 3 em 3 bytes e para cada passagem jogar os 3 bytes no inteiro e extrair os valores usando máscara de bits.
 
 ```go
 for i := 0; i < len(input); i += 6 {
     
-    block := int64(input[i])     << 40 | 
-             int64(input[i + 1]) << 32 |
-             int64(input[i + 2]) << 24 |
-             int64(input[i + 3]) << 16 | 
-             int64(input[i + 4]) << 8  | 
-             int64(input[i + 5])
+    blk := int32(in[i    ]) << 16 | 
+           int32(in[i + 1]) << 8  | 
+           int32(in[i + 2])
 
-    output = append(output,
-        base64Table[(block >> 42) & 0b00111111],
-        base64Table[(block >> 36) & 0b00111111],
-        base64Table[(block >> 30) & 0b00111111],
-        base64Table[(block >> 24) & 0b00111111],
-        base64Table[(block >> 18) & 0b00111111],
-        base64Table[(block >> 12) & 0b00111111],
-        base64Table[(block >>  6) & 0b00111111],
-        base64Table[ block        & 0b00111111],
-    )
+    out = append(out,
+            b64[(blk >> 18) & 0b00111111],
+            b64[(blk >> 12) & 0b00111111],
+            b64[(blk >>  6) & 0b00111111],
+            b64[ blk        & 0b00111111],
+		)
+
 }
 ```
 
-Agora só precisamos lidar com casos onde o input tem menos que 6 bytes ou o input não é múltiplo de 6 bytes
+<summary>Extra: Explicação do código
+<details>
+<br>
+<p>O que foi feito?</p>
+<br>
+<p>Criamos um inteiro de 32 bits (int32) e jogamos os 3 bytes do input em cima dele. Para o primeiro byte (na posição i) jogamos para a esquerda 16 bits, para o segundo byte (na posição i + 1) jogamos para a esquerda 8 bits e para o terceiro byte (na posição i + 2) não precisamos jogar nada para a esquerda.</p>
+<p>
+Imagine que são caixas que cabem 1 byte, o inteiro possui 4 dessas caixas, então precisamos jogar o primeiro byte para a esquerda 16 bits para que ele ocupe a terceira posição, o segundo byte para a esquerda 8 bits e o terceiro byte não precisamos jogar nada para a esquerda porque vai começar no bit 0. Graficamente temos isso:</p>
+<pre>
+Byte i + 0 = <span style="color:#ff6666;">01101111</span>  (111 em decimal)
+Byte i + 1 = <span style="color:#00ccff;">01111000</span>  (120 em decimal)
+Byte i + 2 = <span style="color:#ffcc00;">01010010</span>  (82 em decimal) <br>
+blk = <span style="color:lightblue"> 000000000 00000000 00000000 00000000</span><br>
+Primeiro byte entra começando no bit 16
+blk = <span style="color:lightblue"> 000000000<span style="color:#ffcc00;">01010010</span>00000000 00000000</span><br>
+Segundo byte entra começando no bit 8
+blk = <span style="color:lightblue"> 00000000</span><span style="color:#ffcc00;">01010010</span><span style="color:#00ccff;">01111000</span>00000000</span><br>
+Terceiro byte entra começando no bit 0
+blk = <span style="color:lightblue"> 00000000</span><span style="color:#ffcc00;">01010010</span><span style="color:#00ccff;">01111000</span><span style="color:#ff6666;">01010010</span>
+</pre>
+
+<p>Vamos em câmera lenta. Suponha que</p>
+
+<pre>
+in[i    ] = b10000000
+in[i + 1] = b00000001
+in[i + 2] = b00010000
+</pre>
 
 ```go
-len := len(input)
-rem := len % 6
+blk := int32(in[i    ]) << 16  // blk = 00000000_10000000_00000000_00000000
+blk  |= int32(in[i + 1]) << 8  // blk = 00000000_10000000_00000001_00000000
+blk |= int32(in[i + 2])        // blk = 00000000_10000000_00000001_00010000
+```
+<p>Ou seja, ligou o bit 32 vindo do primeiro byte (ele já estava na posição 8, deslocou 16), o bit 8 do segundo byte (estava na posição 0 e deslocou 8) e o bit 5 (estava na posição 5 do terceiro byte e não teve deslocamento).</p>
 
-for i := 0; i < len - rem; i += 6 {
-    ...
-}
+<p>Sei que vocẽ já entendeu, mas cabe lembrar que OR funciona da seguinte forma, você tem um valor qualquer com alguns bits ligados e outros não, quando você aplica o OR com outro valor, o que já existe no seu continua, o que não existe no seu, mas existe no outro cara, ele passa a existir no seu. P.ex.: o seu é b00010000 o outro cara é b00000001 agora o seu será b00010001. Veja a tabela do OR para refrescar a memória:</p>
 
-if rem > 0 {
-    var block int64 = 0 |
-        (int64(input[len -rem     ]) << 40) * int64(rem >= 1) |
-        (int64(input[len - rem + 1]) << 32) * int64(rem >= 2) |
-        (int64(input[len - rem + 2]) << 24) * int64(rem >= 3) |
-        (int64(input[len - rem + 3]) << 16) * int64(rem >= 4) |
-        (int64(input[len - rem + 4]) <<  8) * int64(rem >= 5)
+<table border="1">
+  <tr>
+  <th>A</th>
+  <th>OR</th>
+  <th>B</th>
+  <th>C</th>
+  </tr>
+  <tr>
+  <td>1</td>
+  <td>OR</td>
+  <td>1</td>
+  <td>1</td>
+  </tr>
+  <tr>
+  <td>1</td>
+  <td>OR</td>
+  <td>0</td>
+  <td>1</td>
+  </tr>
+  <tr>
+  <td>0</td>
+  <td>OR</td>
+  <td>0</td>
+  <td>0</td>
+  </tr>
+</table>
+<br>
 
+<p>Agora que temos os 3 bytes dentro de um único inteiro de 32 bits (blk), precisamos extrair 4 grupos de 6 bits, pois cada caractere Base64 é representado por exatamente 6 bits.</p>
+
+<p>A extração é feita aplicando deslocamento de bits (>>) e uma máscara (& 0b00111111), que serve para zerar os bits irrelevantes e pegar exatamente os 6 bits desejados.</p>
+
+<p>Graficamente, temos:</p>
+
+<pre>
+blk = <span style="color:lightblue">00000000</span><span style="color:#ffcc00;">01010010</span><span style="color:#00ccff;">01111000</span><span style="color:#ff6666;">01010010</span>
+</pre>
+
+<p>Agora, extraímos os grupos de 6 bits um por um:</p>
+
+<ul>
+  <li>Primeiros 6 bits: Para extrair os bits mais à esquerda, deslocamos 18 bits para a direita e aplicamos a máscara.</li>
+</ul>
+
+<pre>
+b64_1 = (blk >> 18) & 0b00111111  <span style="color:darkgreen">// 00000000_00000000_00000000_00010010 → 000100</span>
+b64_1 = <span style="color:#ffcc00;">000100</span>
+</pre>
+
+<ul>
+  <li>Segundos 6 bits: Deslocamos 12 bits para a direita e aplicamos a máscara.</li>
+</ul>
+
+<pre>
+b64_2 = (blk >> 12) & 0b00111111  <span style="color:darkgreen">// 00000000_00000000_00000010_01010010 → 010100</span>
+b64_2 = <span style="color:#00ccff;">010100</span>
+</pre>
+
+<ul>
+  <li>Terceiros 6 bits: Deslocamos 6 bits para a direita e aplicamos a máscara.</li>
+</ul>
+
+<pre>
+b64_3 = (blk >> 6) & 0b00111111   <span style="color:darkgreen">// 00000000_00000000_01111000_01010010 → 011110
+b64_3 = <span style="color:#ff6666;">011110</span>
+</pre>
+
+<ul>
+  <li>Últimos 6 bits: Não há deslocamento, apenas aplicamos a máscara.</li>
+</ul>
+
+<pre>
+b64_4 = blk & 0b00111111 <span style="color:darkgreen">// 00000000_00000000_01111000_01010010 → 100010
+b64_4 = <span style="color:#ff9999;">100010</span>
+</pre>
+
+<p>Agora, temos os 4 índices da tabela Base64 prontos para serem mapeados!</p>
+<p>Isso significa que podemos simplesmente usar o array <code>b64</code> para obter os caracteres correspondentes, indexando diretamente com <code>b64_1</code>, <code>b64_2</code>, <code>b64_3</code> e <code>b64_4</code>.</p>
+
+<pre>
+b64_1 = <span style="color:#ffcc00;">000100</span>  (4 em decimal)  →  Índice <code>b64[4]</code>  →  <span style="color:#ffcc00;">T</span>
+b64_2 = <span style="color:#00ccff;">010100</span>  (20 em decimal) →  Índice <code>b64[20]</code> →  <span style="color:#00ccff;">U</span>
+b64_3 = <span style="color:#ff6666;">011110</span>  (30 em decimal) →  Índice <code>b64[30]</code> →  <span style="color:#ff6666;">e</span>
+b64_4 = <span style="color:#ff9999;">100010</span>  (34 em decimal) →  Índice <code>b64[34]</code> →  <span style="color:#ff9999;">Y</span>
+</pre>
+
+<p>Ou seja, os números binários extraídos representam <strong>índices na tabela Base64</strong>, e ao acessar <code>b64[4]</code>, <code>b64[20]</code>, etc., obtemos os caracteres finais da string codificada.</p>
+</details>
+</summary>
+<br>
+
+Agora só precisamos lidar com casos onde o input tem menos que 3 bytes ou o input não é múltiplo de 3 bytes
+
+```go
+if rem == 0 {
+		return string(out)
+	}
     
-    base64Chunk := [4]byte{
-        base64Table[(block >> 42) & 0b00111111],
-        base64Table[(block >> 36) & 0b00111111],
-        base64Table[(block >> 30) & 0b00111111],
-        base64Table[(block >> 24) & 0b00111111],
+	var blk int64 = 0
+
+ 	if rem == 1 {
+        blk = int64(in[len - rem]) << 16
+        out = append(out,
+            b64[(blk >> 18) & 0b00111111],
+            b64[(blk >> 12) & 0b00111111],
+            '=',
+            '=',
+        )
+    } else if rem == 2 {
+        blk = int64(in[len - rem]) << 16 | int64(in[len - rem + 1]) << 8
+        out = append(out,
+            b64[(blk >> 18) & 0b00111111],
+            b64[(blk >> 12) & 0b00111111],
+            b64[(blk >> 6)  & 0b00111111],
+            '=',
+        )
     }
 
-    pad := 4 - ((rem * 4) / 3)
-    base64Chunk[3] = '=' * byte(pad>>0 & 1) // Se pad >= 1, substitui o último
-    base64Chunk[2] = '=' * byte(pad>>1 & 1) // Se pad == 2, substitui o penúltimo
-
-    output = append(output, base64Chunk[:]...)
-}
-
+	return string(out)
 
 ```
+
+TODO: explicar o que está acontecendo aqui
 
 O código completo fica:
 
 ```go
-package main
-
-const base64Table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-
-func EncodeBase64(input []byte) string {
-	
-    var output []byte
-	len := len(input)
-	rem := len % 6
-
-    for i := 0; i < len(input); i += 6 {
-    
-        block := int64(input[i])     << 40 | 
-                 int64(input[i + 1]) << 32 |
-                 int64(input[i + 2]) << 24 |
-                 int64(input[i + 3]) << 16 | 
-                 int64(input[i + 4]) << 8  | 
-                 int64(input[i + 5])
-
-        output = append(output,
-            base64Table[(block >> 42) & 0b00111111],
-            base64Table[(block >> 36) & 0b00111111],
-            base64Table[(block >> 30) & 0b00111111],
-            base64Table[(block >> 24) & 0b00111111],
-            base64Table[(block >> 18) & 0b00111111],
-            base64Table[(block >> 12) & 0b00111111],
-            base64Table[(block >>  6) & 0b00111111],
-            base64Table[ block        & 0b00111111],
-    )
-
-    
-    var block int64 = 0 |
-        (int64(input[len - rem    ]) << 40) * int64(rem >= 1) |
-        (int64(input[len - rem + 1]) << 32) * int64(rem >= 2) |
-        (int64(input[len - rem + 2]) << 24) * int64(rem >= 3) |
-        (int64(input[len - rem + 3]) << 16) * int64(rem >= 4) |
-        (int64(input[len - rem + 4]) <<  8) * int64(rem >= 5)
-
-
-    base64Chunk := [4]byte{
-        base64Table[(block >> 42) & 0b00111111],
-        base64Table[(block >> 36) & 0b00111111],
-        base64Table[(block >> 30) & 0b00111111],
-        base64Table[(block >> 24) & 0b00111111],
-    }
-
-    pad := 4 - ((rem * 4) / 3)
-    base64Chunk[3] = '=' * byte(pad >> 0 & 1)
-    base64Chunk[2] = '=' * byte(pad >> 1 & 1)
-
-    output = append(output, base64Chunk[:]...)
-    
-    return string(output)
-}
-
-func main() {
-    testCases := []string{"Man", "Hello", "T", "Testing123", "Base64!", "abcdefg"}
-	
-    for _, test := range testCases {
-		encoded := EncodeBase64([]byte(test))
-		println("Base64 de ", test, ": ", encoded)
-	}
-}
-
+// código completo!
+```
 
 
 

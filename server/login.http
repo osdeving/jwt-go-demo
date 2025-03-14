@@ -1,14 +1,15 @@
 ### Login (obter token JWT e salvar)
+@protocol = http
 @hostname = localhost
 @port = 8080
-@host = {{hostname}}:{{port}}
+@host = {{protocol}}://{{hostname}}:{{port}}
 @contentType = application/json
 
 ###
 # @prompt email
 # @prompt password
 # @name postLogin
-POST http://{{host}}/login HTTP/1.1
+POST {{host}}/login HTTP/1.1
 Content-Type: {{contentType}}
 
 {
@@ -19,5 +20,5 @@ Content-Type: {{contentType}}
 @token = {{postLogin.response.body.access_token}}
 
 ### Acessar endpoint protegido usando o token capturado
-GET http://localhost:8080/protected
+GET {{host}}/protected
 Authorization: Bearer {{token}}
